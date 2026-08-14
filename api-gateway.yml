@@ -1,0 +1,68 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userServiceCB
+                fallbackUri: forward:/fallback/users
+            - RewritePath=/api/users/(?<segment>.*), /$\{segment}
+
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: productServiceCB
+                fallbackUri: forward:/fallback/products
+            - RewritePath=/api/products/(?<segment>.*), /$\{segment}
+
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: orderServiceCB
+                fallbackUri: forward:/fallback/orders
+            - RewritePath=/api/orders/(?<segment>.*), /$\{segment}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userServiceCB:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+      productServiceCB:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+      orderServiceCB:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 5s
+  timelimiter:
+    instances:
+      userServiceCB:
+        timeout-duration: 3s
+      productServiceCB:
+        timeout-duration: 3s
+      orderServiceCB:
+        timeout-duration: 3s
