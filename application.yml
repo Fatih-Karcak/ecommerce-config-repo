@@ -13,3 +13,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+
+db:
+  
+  password: "{cipher}9a0d48bff3779b49d506d032871ca8619a458402386c2ccb67c038ba40c6a598174d9878fb0cc08ca3f6ca484f0c3b80"    
