@@ -1,6 +1,7 @@
 server:
   port: 8080
-
+jwt:
+  secret: "bXlfc3VwZXJfc2VjcmV0X2p3dF9rZXlfY2hhbmdlX3RoaXNfaW5fcHJvZHVjdGlvbg=="
 spring:
   cloud:
     gateway:
